@@ -23,7 +23,15 @@ All infrastructure here is deployed using the SAM cli.
 
 * Ensure that an integration exists between your AWS account and DataDog account. Detailed instructions are available [here](https://docs.datadoghq.com/integrations/#cat-aws).
 
-* The custom resource requres programmatic access to DataDog. As such you must save your DataDog API Key and App Key in AWS Secrets Manager.
+* The custom resource requres programmatic access to DataDog. As such you must save your DataDog API Key and App Key in AWS Secrets Manager as follow:
+
+```
+{
+  "DD_CLIENT_API_KEY": "API KEY",
+  "DD_CLIENT_APP_KEY": "APP KEY"
+}
+```
+
 
 ## How it all works!
 
