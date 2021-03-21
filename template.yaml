@@ -84,7 +84,7 @@ Resources:
       ServiceToken: !GetAtt DataDogMonitorLambda.Arn
       Name: "CR TestLambda Monitor"
       FunctionName: !Ref TestLambda
-      Message: "Test Message \n@harry.daniels.iw@cinch.co.uk"
+      Message: "Test Message \n@harry.daniels@email.co.uk"
       Priority: 3
       Tags: 
         - "env:dev"

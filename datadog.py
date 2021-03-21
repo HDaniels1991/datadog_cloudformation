@@ -44,5 +44,5 @@ class Monitor:
 
     def delete_monitor(self, monitor_id):
         url = os.path.join(self.base_url, f'monitor/{monitor_id}')
-        response = requests.delete(url, self.headers).json()
+        response = requests.delete(url, headers=self.headers).json()
         return response
