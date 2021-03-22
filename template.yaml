@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: 'AWS::Serverless-2016-10-31'
-Description: Custom Resource Example
+Description: Datadog lambda monitor example
 
 Parameters:
 
@@ -11,35 +11,9 @@ Parameters:
   Secrets:
     Type: String
     Description: The name of the secrets in AWS SM.
-    default: !sub '${Env}/CloudFormation/DataDogKeys'
+    Default: 'dev/CloudFormation/DataDogKeys'
 
 Resources:
-
-  DataDogMonitorLambdaRole:
-    Type: 'AWS::IAM::Role'
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service:
-                - lambda.amazonaws.com
-            Action:
-              - 'sts:AssumeRole'
-      PermissionsBoundary: !Sub 'arn:aws:iam::${AWS::AccountId}:policy/boundary_platform'
-      Path: /platform/
-      ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
-        - arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess
-      Policies:
-        - PolicyName: DDSecrets
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: Allow
-                Action: 'secretsmanager:GetSecretValue'
-                Resource: !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${Secrets}*'
 
   DataDogMonitorLambda:
     Type: 'AWS::Serverless::Function'
@@ -47,29 +21,13 @@ Resources:
       Handler: datadog_lambda_function.handler
       Runtime: python3.6
       Description: A function which manages the creation of monitors in DataDog.
-      Role: !GetAtt DataDogMonitorLambdaRole.Arn 
       Tracing: Active
+      Policies:
+        - AWSSecretsManagerGetSecretValuePolicy:
+            SecretArn: !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${Secrets}*'
       Environment:
         Variables:
           SECRETS: !Ref Secrets 
-  
-  TestRole:
-    Type: 'AWS::IAM::Role'
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service:
-                - lambda.amazonaws.com
-            Action:
-              - 'sts:AssumeRole'
-      PermissionsBoundary: !Sub 'arn:aws:iam::${AWS::AccountId}:policy/boundary_platform'
-      Path: /platform/
-      ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
-        - arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess
 
   TestLambda:
     Type: 'AWS::Serverless::Function'
@@ -77,7 +35,6 @@ Resources:
       Handler: lambda_function.handler
       Runtime: python3.6
       Description: A test function.
-      Role: !GetAtt TestRole.Arn
       Tracing: Active
       Tags:
         env: !Ref Env
