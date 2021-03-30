@@ -11,7 +11,7 @@ Parameters:
   Secrets:
     Type: String
     Description: The name of the secrets in AWS SM.
-    default: !sub '${Env}/CloudFormation/DataDogKeys'
+    Default: 'dev/CloudFormation/DataDogKeys'
 
 Resources:
 
